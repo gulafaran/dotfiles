@@ -10,6 +10,9 @@ export LESS_TERMCAP_so=$'\e[01;44;33m'
 export LESS_TERMCAP_ue=$'\e[0m'
 export LESS_TERMCAP_us=$'\e[01;32m'
 
+#XDG base dir plz
+eval $(dircolors "$XDG_CONFIG_HOME"/dircolors)
+
 if [[ ! $DISPLAY && $XDG_VTNR -eq 1 ]]; then
   exec systemd-cat /usr/bin/sx
 fi
