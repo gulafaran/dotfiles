@@ -1,0 +1,4 @@
+#!/bin/bash
+
+STATUS=`grep 'Video Memory:' /proc/driver/nvidia/gpus/0000:01:00.0/power | sed -n -e 's/^.*: //p' | xargs`
+echo $STATUS

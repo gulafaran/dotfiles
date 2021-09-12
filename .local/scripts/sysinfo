@@ -1,0 +1,62 @@
+#!/bin/bash
+
+Date=$(date '+%Y-%m-%d')
+Uzr=$(getent passwd 1000 | awk -F':' '{print $1}')
+Sendto="/home/${Uzr}/sysinfo/sysinfo-${Date}"
+Lastrb=$(uptime -p | awk '{$1=""; print}')
+Count=$(find /home/"${Uzr}"/sysinfo/* -maxdepth 0 -type f  | wc -l)
+tmpDir=$(mktemp -d)
+tmpDB=$(mktemp -d)
+#=============================================================================================#
+Lastud=$(awk -F'[][ :-]' ' /upgrade$/ {gsub (/T/, " ") ; last = mktime($2 " " $3 " " $4 " " $5 " " $6 " 00")}   # Added:   gsub (/T/, " ") ;
+  END { s = systime() - last;               # for pacman.log date format change
+      d = int(s / 86400);
+      h = int((s - d * 86400) / 3600)
+      m = int((s - d * 86400 - h * 3600) / 60)
+      printf "%d days, %d hours, %d minutes ago\n", d, h, m
+    }     ' /var/log/pacman.log)
+#=============================================================================================#
+
+if  (($Count >= 5)) ; then
+  rm "$(find /home/"${Uzr}"/sysinfo/* -maxdepth 0 -type f | sort | head -n -4 | xargs)"
+fi
+  trap 'sudo rm -rd --interactive=never "${tmpDir}" "${tmpDB}"' INT TERM EXIT  
+  cp -r /var/lib/pacman/* "${tmpDB}"
+  sudo pacman -Syy --color=never --dbpath "${tmpDB}" 2> "${tmpDir}"/pacSyy
+
+  readarray -t updates < <(pacman -Qu --dbpath "${tmpDB}" |& tee -a 2>"${Sendto}" | tee >(grep '\[*\]' > "${tmpDir}"/ignored) | grep -v '\[*\]' )
+
+if  [[ -n "${updates[*]}" ]] ; then 
+  if  ! sudo pacman -Spw --needed --noconfirm --dbpath "${tmpDB}" "${updates[@]%% *}" &> "${tmpDir}"/pacSpw ; then
+    grep -E 'WARNING:|warning:|error:|:: Replace' "${tmpDir}"/pacSpw >> "${Sendto}"
+  fi
+
+  if  ! sudo pacman -Sw  --needed --noconfirm --dbpath "${tmpDB}" "${updates[@]%% *}" |& tee "${tmpDir}"/pacSw ; then
+    grep -E 'WARNING:|warning:|error:|:: Replace' "${tmpDir}"/pacSw >> "${Sendto}"
+  fi
+
+  echo "sysinfo report : $(date '+%b %d %Y %I:%M %p')"        >> "${Sendto}"
+  echo "Last update    : ${Lastud}"           >> "${Sendto}"
+  echo "Last reboot    :${Lastrb} ago"            >> "${Sendto}"
+  grep -E 'WARNING:|warning:|error:|:: Replace' "${tmpDir}"/pacSyy    >> "${Sendto}"
+  echo                    >> "${Sendto}"
+  echo "Updates available:"             >> "${Sendto}"
+  printf "%s\n" "${updates[@]}" | nl | column -t          >> "${Sendto}"
+  echo                    >> "${Sendto}"
+  echo "Updates available, not downloaded:"         >> "${Sendto}"
+  awk '{print "--  "$0}' "${tmpDir}"/ignored | column -t        >> "${Sendto}"
+  echo                    >> "${Sendto}"
+  echo "Updates available locally:"           >> "${Sendto}"
+  awk -F '/' '/file:/ {print $8}' "${tmpDir}"/pacSpw |sort|nl -n'ln' -s' ' -w3  >> "${Sendto}"
+  echo                    >> "${Sendto}"
+  echo "Downloaded packages:"             >> "${Sendto}"
+  awk '/downloading/ {print $1" "$2}' "${tmpDir}"/pacSw |sort|nl -n'ln' -s' ' -w3 >> "${Sendto}"
+  chown "$Uzr" "${Sendto}"
+else
+  echo "Last update  : ${Lastud}"           |& tee -a "${Sendto}"
+  echo "Last reboot  :${Lastrb} ago"          |& tee -a "${Sendto}"
+  grep -E 'WARNING:|warning:|error:|:: Replace' "${tmpDir}"/pacSyy  |& tee -a "${Sendto}"
+  echo "No updates available  $(date '+%b %d %Y')"      |& tee -a "${Sendto}"
+  chown "$Uzr" "${Sendto}"
+  exit
+fi

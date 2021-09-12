@@ -1,0 +1,12 @@
+xrdb -merge ~/.config/xorg/xresources
+sh /etc/X11/xinit/xinitrc.d/40-libcanberra-gtk-module.sh
+sh /etc/X11/xinit/xinitrc.d/50-systemd-user.sh
+/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
+nm-applet 2>&1 > /dev/null &
+keepassxc &
+blueman-applet 2>&1 > /dev/null &
+udiskie --tray &
+dropbox &
+parcellite &
+
+exec /usr/bin/awesome

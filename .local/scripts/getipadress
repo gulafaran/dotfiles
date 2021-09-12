@@ -1,0 +1,4 @@
+#!/bin/bash
+IP=`ip -4 addr show wlp5s0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}'`
+
+echo $IP

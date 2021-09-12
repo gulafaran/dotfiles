@@ -1,0 +1,5 @@
+#!/bin/bash
+
+battery_info=`acpi -b`
+
+notify-send "Battery info" "${battery_info}"
