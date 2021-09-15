@@ -14,4 +14,4 @@ directory = /home/tom/downloads/torrents/
 session = /home/tom/.config/rtorrent/session/
 
 # on finish hook
-method.set_key = event.download.finished,notify_me,"execute=/home/tom/.local/bin/torrentdone,$d.name="
+method.set_key = event.download.finished,notify_me,"execute=/home/tom/.local/scripts/torrentdone,$d.name="

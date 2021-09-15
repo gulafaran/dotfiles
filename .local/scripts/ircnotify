@@ -1,4 +1,4 @@
 #!/bin/bash
 
 paplay ~/.config/weechat/boing_x.wav
-notify-send 'weechat' "$@" --icon=dialog-information
+notify-send 'weechat' "$@"

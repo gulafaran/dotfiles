@@ -35,6 +35,8 @@ naughty.config.defaults['icon_size'] = 60
 naughty.config.defaults['notification_max_height'] = 150
 naughty.config.defaults['notification_max_width'] = 250
 
+local opacity = 80
+
 browser = "firefox"
 terminal = "alacritty"
 editor = os.getenv("EDITOR") or "vim"
@@ -88,26 +90,30 @@ mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
 
 menubar.utils.terminal = terminal
 mytextclock = wibox.widget.textclock()
+mytextclock.opacity = 0.8
 
 local tray_widget = wibox.widget {
   {
     {
       {
         widget = wibox.widget.systray,
+        opacity = 0.8,
       },
       left = 6,
       top = 1,
       bottom = 1,
       right = 6,
-      widget = wibox.container.margin
+      widget = wibox.container.margin,
+      opacity = 0.8
     },
     widget = wibox.container.background,
     shape = gears.shape.rounded_bar,
-    bg = beautiful.bg_systray
+    opacity = 0.8
   },
   top = 1,
   bottom = 1,
-  widget = wibox.container.margin
+  widget = wibox.container.margin,
+  opacity = 0.8
 }
 
 local taglist_buttons = gears.table.join(
@@ -208,13 +214,12 @@ local open = io.open
 local function update_cpu_widget(widget)
     local file = open("/sys/class/hwmon/hwmon5/temp1_input", "rb")
     local temp = "*"
-    if not file then
-        widget.markup = temp .. "C° "
-        return
+    if file then
+        local content = file:read "*line"
+        file:close()
+        temp = tonumber(content) / 1000
     end
-    local content = file:read "*line"
-    file:close()
-    temp = tonumber(content) / 1000
+
     widget.markup = temp .. "C° "
 end
 
@@ -233,7 +238,7 @@ end
 cputempwidget = wibox.widget.textbox()
 register_cpu_widget(cputempwidget, 5)
 
-local function update_dgpu_widget(widget)
+local function update_dgpu_widget(widget, widget2)
     local file = open("/proc/driver/nvidia/gpus/0000:01:00.0/power", "rb")
     local state = "Unknown"
 
@@ -250,22 +255,36 @@ local function update_dgpu_widget(widget)
     end
 
     widget.markup = state .. " "
+
+    file = open("/sys/bus/pci/devices/0000:01:00.0/power/control", "rb")
+    state = "Unknown"
+
+    if file then
+        state = file:read "*line"
+        file:close()
+        if not state then
+            state = "Unknown"
+        end
+    end
+
+    widget2.markup = state .. " "
 end
 
-local function register_dgpu_widget(widget, seconds)
+local function register_dgpu_widget(widget, widget2, seconds)
   local timer = gears.timer {
     timeout = seconds,
     autostart = true,
     call_now = false,
-    callback = update_dgpu_widget(widget),
+    callback = update_dgpu_widget(widget, widget2),
     single_shot = false
   }
 
-  timer:connect_signal("timeout", function() update_dgpu_widget(widget) end)
+  timer:connect_signal("timeout", function() update_dgpu_widget(widget, widget2) end)
 end
 
 dgpuwidget = wibox.widget.textbox()
-register_dgpu_widget(dgpuwidget, 10)
+dgpuwidget2 = wibox.widget.textbox()
+register_dgpu_widget(dgpuwidget, dgpuwidget2, 10)
 
 tags = {
   names = {
@@ -308,14 +327,11 @@ awful.screen.connect_for_each_screen(function(s)
     s.mytasklist = awful.widget.tasklist ({
         screen  = s,
         filter  = awful.widget.tasklist.filter.currenttags,
-        buttons = tasklist_buttons,
-        style = {
-            shape = gears.shape.rounded_bar
-        }
+        buttons = tasklist_buttons
     })
 
-    s.mywibox = awful.wibar({ position = "top", screen = s })
-    s.botbar = awful.wibar({ position = "bottom", screen = s })
+    s.mywibox = awful.wibar({ position = "top", screen = s})
+    s.botbar = awful.wibar({ position = "bottom", screen = s})
 
     s.mywibox:setup {
         layout = wibox.layout.align.horizontal,
@@ -341,6 +357,7 @@ awful.screen.connect_for_each_screen(function(s)
       cpuwidget,
       cputempwidget,
       dgputext,
+      dgpuwidget2,
       dgpuwidget,
       memwidget,
       swapwidget,

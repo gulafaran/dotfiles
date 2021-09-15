@@ -78,6 +78,7 @@ nvme_core
 poly1305_x86_64
 r8169
 rapl
+razerkbd
 razermouse
 rc_core
 realtek
@@ -102,7 +103,9 @@ snd_pcm
 snd_pcsp
 snd_rawmidi
 snd_rn_pci_acp3x
+snd_seq
 snd_seq_device
+snd_seq_dummy
 snd_timer
 snd_usb_audio
 snd_usbmidi_lib
