@@ -48,8 +48,8 @@ colors:
     cyan:    '#63e7f0'
     white:   '#f3f3f3'
 
-env:
-  TERM: alacritty
+#env:
+#  TERM: alacritty
 
 window:
     opacity: 0.8

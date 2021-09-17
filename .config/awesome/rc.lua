@@ -442,9 +442,9 @@ globalkeys = gears.table.join(
               { description = "spotify stop song", group = "launcher"}),
     awful.key({ }, "XF86TouchpadToggle", function () awful.spawn("toggletouchpad") end,
               { description = "toggle touchpad", group = "launcher"}),
-    awful.key({ }, "XF86MonBrightnessDown", function () awful.spawn("xbacklight -dec 3") end,
+    awful.key({ }, "XF86MonBrightnessDown", function () awful.spawn("xbacklight -dec 10") end,
               { description = "lower brightness", group = "launcher"}),
-    awful.key({ }, "XF86MonBrightnessUp", function () awful.spawn("xbacklight -inc 3") end,
+    awful.key({ }, "XF86MonBrightnessUp", function () awful.spawn("xbacklight -inc 10") end,
               { description = "raisebrightness", group = "launcher"})
 )
 
