@@ -184,9 +184,6 @@ fswidget = wibox.widget.textbox()
 vicious.cache(vicious.widgets.fs)
 vicious.register(fswidget, vicious.widgets.fs, '<span color="#1793D1">ROOT</span>: ${/ used_gb}/${/ size_gb} GiB ' , 20)
 
-fs2widget = wibox.widget.textbox()
-vicious.register(fs2widget, vicious.widgets.fs, '<span color="#1793D1">AUR</span>: ${/home/tom/aur used_gb}/${/home/tom/aur size_gb} GiB ', 20)
-
 fs3widget = wibox.widget.textbox()
 vicious.register(fs3widget, vicious.widgets.fs, '<span color="#1793D1">DEV</span>: ${/home/tom/dev used_gb}/${/home/tom/dev size_gb} GiB ', 20)
 
@@ -196,7 +193,7 @@ vicious.register(netwidget, vicious.widgets.net, '<span color="#1793D1">NET</spa
 
 oswidget = wibox.widget.textbox()
 vicious.cache(vicious.widgets.os)
-vicious.register(oswidget, vicious.widgets.os, '<span color="#1793D1"> OS</span>: $1 $2 ', 50)
+vicious.register(oswidget, vicious.widgets.os, '<span color="#1793D1"> OS</span>: Windows 3.11™ $2 ', 50)
 
 batwidget = wibox.widget.textbox()
 vicious.cache(vicious.widgets.bat)
@@ -205,9 +202,6 @@ vicious.register(batwidget, vicious.widgets.bat, '<span color="#1793D1"> BAT</sp
 volwidget = wibox.widget.textbox()
 vicious.cache(vicious.widgets.volume)
 vicious.register(volwidget, vicious.widgets.volume, '<span color="#1793D1">VOL</span>: $1% ', 15, {"Master", "-D", "pulse"})
-
-dgputext = wibox.widget.textbox()
-dgputext.markup = '<span color="#1793D1">DGPU</span>: '
 
 local open = io.open
 
@@ -267,7 +261,7 @@ local function update_dgpu_widget(widget, widget2)
         end
     end
 
-    widget2.markup = state .. " "
+    widget2.markup = '<span color="#1793D1">DGPU</span>: ' .. state .. " "
 end
 
 local function register_dgpu_widget(widget, widget2, seconds)
@@ -285,6 +279,53 @@ end
 dgpuwidget = wibox.widget.textbox()
 dgpuwidget2 = wibox.widget.textbox()
 register_dgpu_widget(dgpuwidget, dgpuwidget2, 10)
+
+local function update_power_widget(widget)
+    local file = open("/sys/class/power_supply/BAT1/current_now", "rb")
+    local state = "0"
+    local current = 0
+    local voltage = 0
+
+    if file then
+        local content = file:read "*line"
+        file:close()
+
+        current = tonumber(content)
+    end
+
+    file = open("/sys/class/power_supply/BAT1/voltage_now", "rb")
+
+    if file then
+        local content = file:read "*line"
+        file:close()
+        
+        voltage = tonumber(content)
+    end
+
+    local watt = (voltage * current) / 1000000000000
+    local wattrounded = math.floor(watt + 0.5)
+
+    if wattrounded then
+        state = wattrounded
+    end
+
+    widget.markup = '<span color="#1793D1">PWR</span>: ' .. state .. "W "
+end
+
+local function register_power_widget(widget, seconds)
+  local timer = gears.timer {
+    timeout = seconds,
+    autostart = true,
+    call_now = false,
+    callback = update_power_widget(widget),
+    single_shot = false
+  }
+
+  timer:connect_signal("timeout", function() update_power_widget(widget) end)
+end
+
+powerwidget = wibox.widget.textbox()
+register_power_widget(powerwidget, 10)
 
 tags = {
   names = {
@@ -356,7 +397,6 @@ awful.screen.connect_for_each_screen(function(s)
       oswidget,
       cpuwidget,
       cputempwidget,
-      dgputext,
       dgpuwidget2,
       dgpuwidget,
       memwidget,
@@ -370,6 +410,7 @@ awful.screen.connect_for_each_screen(function(s)
     {
       layout = wibox.layout.fixed.horizontal,
       batwidget,
+      powerwidget,
       volwidget,
       s.mylayoutbox,
     },

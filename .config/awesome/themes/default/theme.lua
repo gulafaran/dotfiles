@@ -87,7 +87,7 @@ theme.layout_cornerne = themes_path.."default/layouts/cornernew.png"
 theme.layout_cornersw = themes_path.."default/layouts/cornersww.png"
 theme.layout_cornerse = themes_path.."default/layouts/cornersew.png"
 
-theme.awesome_icon = themes_path.."default/icon.png"
+theme.awesome_icon = themes_path.."default/start.png"
 
 theme.icon_theme = nil
 

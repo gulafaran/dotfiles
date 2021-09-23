@@ -9,4 +9,5 @@ udiskie --tray &
 sleep 3 && dropbox &
 parcellite &
 polychromatic-tray-applet &
+xcbsync &
 exec /usr/bin/awesome
