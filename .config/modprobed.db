@@ -7,11 +7,13 @@ algif_skcipher
 amdgpu
 autofs4
 binfmt_misc
+blake2b_generic
 blake2s_x86_64
 bluetooth
 bnep
 btbcm
 btintel
+btrfs
 btrtl
 btusb
 ccm
@@ -55,6 +57,7 @@ ip_tables
 iwlmvm
 iwlwifi
 joydev
+k10temp
 kvm
 kvm_amd
 ledtrig_audio
@@ -64,6 +67,7 @@ libblake2s
 libblake2s_generic
 libchacha
 libchacha20poly1305
+libcrc32c
 libcurve25519_generic
 libphy
 mac80211
@@ -73,10 +77,13 @@ mdio_devres
 mq_deadline
 msr
 nls_ascii
+nls_iso8859_1
+ntfs3
 nvme
 nvme_core
 poly1305_x86_64
 r8169
+raid6_pq
 rapl
 razerkbd
 razermouse
@@ -99,6 +106,7 @@ snd_hwdep
 snd_intel_dspcfg
 snd_intel_sdw_acpi
 snd_pci_acp3x
+snd_pci_acp5x
 snd_pcm
 snd_pcsp
 snd_rawmidi
@@ -133,6 +141,8 @@ videodev
 wireguard
 wmi
 wmi_bmof
+xfs
 xhci_pci
 xhci_pci_renesas
+xor
 x_tables

@@ -46,7 +46,7 @@ QT_AUTO_SCREEN_SCALE_FACTOR DEFAULT="1"
 QT_SCALE_FACTOR             DEFAULT="0.75"
 
 #env vars
-PATH                      DEFAULT="@{HOME}/.local/bin:@{HOME}/.local/scripts:${PATH}"
+PATH                      DEFAULT="${PATH}:@{HOME}/.local/bin:@{HOME}/.local/scripts"
 BROWSER                   DEFAULT="firefox"
 EDITOR                    DEFAULT="${VISUAL:vim}"
 PAGER                     DEFAULT="less"
@@ -62,6 +62,10 @@ DXVK_CONFIG_FILE          DEFAULT="@{HOME}/.config/dxvk/dxvk.conf"
 DXVK_STATE_CACHE          DEFAULT="1"
 DXVK_STATE_CACHE_PATH     DEFAULT="@{HOME}/.local/cache/dxvk"
 DXVK_NVAPI_DRIVER_VERSION DEFAULT="47074"
+VKD3D_DEBUG               DEFAULT="none"
+
+#pci reziable bars off, potential regression.
+VKD3D_CONFIG              DEFAULT="no_upload_hvv"
 
 #vulkan issues
 DISABLE_LAYER_AMD_SWITCHABLE_GRAPHICS_1 DEFAULT="1"
@@ -82,7 +86,11 @@ WINEDLLOVERRIDES          DEFAULT="winemenubuilder.exe=d"
 WINEARCH                  DEFAULT="win64"
 WINEDEBUG                 DEFAULT="-all"
 WINEESYNC                 DEFAULT="1"
-WINEFSYNC                 DEFAULT="0"
+WINEFSYNC                 DEFAULT="1"
 WINEFSYNC_SPINCOUNT       DEFAULT="100"
 STAGING_SHARED_MEMORY     DEFAULT="1"
 WINE_LARGE_ADDRESS_AWARE  DEFAULT="1"
+WINE_FULLSCREEN_FSR       DEFAULT="1"
+WINE_FSR_OVERRIDE         DEFAULT="1"
+WINE_FULLSCREEN_FSR_STRENGTH DEFAULT="1"
+STAGING_RT_PRIORITY_SERVER DEFAULT="90"

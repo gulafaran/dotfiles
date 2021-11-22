@@ -184,6 +184,9 @@ fswidget = wibox.widget.textbox()
 vicious.cache(vicious.widgets.fs)
 vicious.register(fswidget, vicious.widgets.fs, '<span color="#1793D1">ROOT</span>: ${/ used_gb}/${/ size_gb} GiB ' , 20)
 
+fs2widget = wibox.widget.textbox()
+vicious.register(fs2widget, vicious.widgets.fs, '<span color="#1793D1">SSD</span>: ${/home/tom/ssd used_gb}/${/home/tom/ssd size_gb} GiB ', 20)
+
 fs3widget = wibox.widget.textbox()
 vicious.register(fs3widget, vicious.widgets.fs, '<span color="#1793D1">DEV</span>: ${/home/tom/dev used_gb}/${/home/tom/dev size_gb} GiB ', 20)
 

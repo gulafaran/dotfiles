@@ -16,3 +16,8 @@ eval $(dircolors "$XDG_CONFIG_HOME"/dircolors)
 if [[ ! $DISPLAY && $XDG_VTNR -eq 1 ]]; then
   exec systemd-cat /usr/bin/sx
 fi
+
+if [[ ! $DISPLAY && $XDG_VTNR -eq 2 ]]; then
+  source /home/tom/.config/wayland/envvars
+  exec sway --unsupported-gpu
+fi

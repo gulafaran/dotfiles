@@ -6,8 +6,7 @@ nm-applet 2>&1 > /dev/null &
 keepassxc &
 blueman-applet 2>&1 > /dev/null &
 udiskie --tray &
-sleep 3 && dropbox &
+dropbox &
 parcellite &
 polychromatic-tray-applet &
-xcbsync &
 exec /usr/bin/awesome
